@@ -345,14 +345,14 @@ sudo pacman -S --needed dunst
 
 Check which daemon is running with `busctl --user status org.freedesktop.Notifications` (the `Comm=` line names it).
 
-If a notification stays on screen until you click it, add a rule for it. This example makes Proton VPN notifications disappear after 5 seconds. Change the number to taste, or use `skip_display = true` instead of `timeout` to hide them completely:
+If a notification stays on screen until you click it, add a rule for it. This example hides Proton VPN notifications completely. To make them disappear after a few seconds instead, use `timeout = 5` in place of `skip_display = true`:
 
 ```bash
 mkdir -p ~/.config/dunst/dunstrc.d
 cat > ~/.config/dunst/dunstrc.d/10-protonvpn.conf <<'EOF'
 [protonvpn]
     summary = "Proton VPN"
-    timeout = 5
+    skip_display = true
 EOF
 systemctl --user restart dunst
 ```
