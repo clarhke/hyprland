@@ -347,3 +347,4 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("$HOME/.config/hypr/protonvpn-toggle.sh"))
