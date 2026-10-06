@@ -13,8 +13,9 @@ Contents:
 - 4. Wallpaper (hyprpaper)
 - 5. Shell aliases
 - 6. Hyprland config
-- 7. Laptop battery life (TLP)
-- 8. Cleanup
+- 7. VPN (Proton VPN)
+- 8. Laptop battery life (TLP)
+- 9. Cleanup
 
 ---
 
@@ -30,6 +31,7 @@ The guide works on any Arch laptop, but these depend on the machine. Check them 
 sudo pacman -S --needed linux-firmware
 ```
 
+- **Network manager:** the VPN in step 7 needs NetworkManager to run your Wi-Fi. If your Wi-Fi is handled by plain `iwd` or `systemd-networkd` instead, step 7 shows the switch. Have your Wi-Fi password ready for it.
 - **Username:** check it with the command below. If it isn't `arch`, change `/home/arch` in the wallpaper path (step 4).
 
 ```bash
@@ -335,7 +337,7 @@ Note: this warning is visual only. A pop-up notification would need a notificati
 
 ### Notifications (dunst, optional)
 
-Pop-up notifications (for example from Brave) need a notification daemon. This guide doesn't install one, but `archinstall`'s Hyprland profile includes `dunst`. If you set up Hyprland by hand and want notifications, install it. It's explicitly installed, so the cleanup in step 8 won't remove it:
+Pop-up notifications (for example from Brave) need a notification daemon. This guide doesn't install one, but `archinstall`'s Hyprland profile includes `dunst`. If you set up Hyprland by hand and want notifications, install it. It's explicitly installed, so the cleanup in step 9 won't remove it:
 
 ```bash
 sudo pacman -S --needed dunst
@@ -515,7 +517,149 @@ A public repository shows everything in it to everyone, so check the files for a
 
 ---
 
-## 7. Laptop battery life (TLP)
+## 7. VPN (Proton VPN)
+
+The Proton VPN app is built on NetworkManager, so NetworkManager has to be the thing running your Wi-Fi. If `iwd` on its own or `systemd-networkd` handles it instead, the app thinks you're offline and drops the tunnel about 5 seconds after connecting, and with the kill switch on, your internet goes down with it.
+
+### Check who manages your network
+
+```bash
+nmcli device status
+```
+
+If `wlan0` shows `connected` (not `disconnected` or `unmanaged`), NetworkManager already has your Wi-Fi and you can skip to "Install". If it doesn't, switch over below.
+
+### Switch Wi-Fi to NetworkManager
+
+Keep `iwd` as the Wi-Fi engine and let NetworkManager drive it. Have your Wi-Fi password ready, because the connection drops for a few seconds.
+
+```bash
+sudo pacman -S --needed networkmanager
+sudo mkdir -p /etc/NetworkManager/conf.d
+printf '[device]\nwifi.backend=iwd\n' | sudo tee /etc/NetworkManager/conf.d/wifi_backend.conf
+```
+
+Stop `systemd-networkd` for good (the sockets first, or they restart it), then start NetworkManager:
+
+```bash
+sudo systemctl disable --now systemd-networkd.socket systemd-networkd-varlink.socket systemd-networkd-resolve-hook.socket systemd-networkd-varlink-metrics.socket
+sudo systemctl disable --now systemd-networkd
+sudo systemctl enable --now NetworkManager
+```
+
+Connect to your Wi-Fi (replace `YourSSID` with your network name, keep the quotes). It asks for the password:
+
+```bash
+nmcli device wifi connect "YourSSID" --ask
+```
+
+Check it worked. `wlan0` should say `connected` and `systemd-networkd` should say `inactive`:
+
+```bash
+nmcli device status
+systemctl is-active systemd-networkd
+```
+
+Don't disable `iwd`, because NetworkManager uses it. If anything goes wrong, this puts the old setup back:
+
+```bash
+sudo systemctl disable --now NetworkManager
+sudo rm /etc/NetworkManager/conf.d/wifi_backend.conf
+sudo systemctl enable --now systemd-networkd
+```
+
+The Waybar `network` module works the same under NetworkManager.
+
+### Install
+
+Proton's app needs a keyring to store your login:
+
+```bash
+sudo pacman -S --needed proton-vpn-gtk-app gnome-keyring
+```
+
+(If pacman can't find `proton-vpn-gtk-app`, it's available from the AUR instead. That would be a fourth AUR package, so read its build script first, the same way as in step 2: `yay -Gp proton-vpn-gtk-app | nvim -`, then `yay -S proton-vpn-gtk-app`.)
+
+Open Proton VPN from the launcher, log in, and connect. The free plan works. To check the tunnel is up, this should print an IP that isn't your own:
+
+```bash
+curl -s https://ifconfig.me; echo
+```
+
+Closing the app's window with the **X** quits it and drops the VPN (it asks you to confirm), and Hyprland has no minimise button. The next section adds a key that hides and shows the window instead.
+
+### Hide and show the window (SUPER + P)
+
+This adds one key that tucks the Proton VPN window away on a hidden workspace and brings it back. The VPN stays connected while it's hidden, and if the app isn't running the key launches it. It needs `jq`:
+
+```bash
+sudo pacman -S --needed jq
+```
+
+Create the script:
+
+```bash
+cat > ~/.config/hypr/protonvpn-toggle.sh <<'EOF'
+#!/bin/bash
+info=$(hyprctl clients -j | jq -r '.[] | select(.title=="Proton VPN") | "\(.address) \(.workspace.name)"' | head -n1)
+if [ -z "$info" ]; then
+  protonvpn-app &
+  exit
+fi
+addr=${info% *}
+ws=${info#* }
+if [ "$ws" != "special:vpn" ]; then
+  hyprctl dispatch "hl.dsp.window.move({ workspace = \"special:vpn\", follow = false, window = \"address:$addr\" })"
+else
+  hyprctl dispatch 'hl.dsp.workspace.toggle_special("vpn")'
+fi
+EOF
+chmod +x ~/.config/hypr/protonvpn-toggle.sh
+```
+
+Check whether `SUPER + P` is already used (the default config binds it to pseudo-tiling):
+
+```bash
+grep -n '" + P"' ~/.config/hypr/hyprland.lua
+```
+
+If a line shows up, put `-- ` at the start of it so the two binds don't fight. Then add the key and reload:
+
+```bash
+echo 'hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("$HOME/.config/hypr/protonvpn-toggle.sh"))' >> ~/.config/hypr/hyprland.lua
+hyprctl reload
+```
+
+Press `SUPER + P` to hide the window and `SUPER + P` again to show it. To use a different key, change the `P` in the last command.
+
+If nothing happens, run the script by hand to see its error:
+
+```bash
+~/.config/hypr/protonvpn-toggle.sh
+```
+
+The script finds the window by its title, `Proton VPN`. Check Hyprland sees it with `hyprctl clients | grep -i proton`. Newer Hyprland uses Lua commands for `hyprctl dispatch`, which is why the script is written that way.
+
+### If it still disconnects
+
+- Make sure NetworkManager is running and enabled at boot: `sudo systemctl enable --now NetworkManager`.
+- Free servers get busy. Try a different country or protocol in the app's settings.
+- If your internet stays dead after a disconnect, leftover kill switch entries may be blocking it. List the connections and delete any `pvpn-killswitch...` ones (keep the quotes):
+
+```bash
+nmcli connection show
+nmcli connection delete "pvpn-killswitch-ipv6"
+```
+
+- Read what NetworkManager logged around the drop:
+
+```bash
+journalctl -u NetworkManager -n 80 --no-pager
+```
+
+---
+
+## 8. Laptop battery life (TLP)
 
 Arch doesn't come with any power management, so install TLP. It applies sensible battery-saving settings automatically, with no configuration needed. It works on the ThinkPad, Framework and Surface Pro.
 
@@ -597,11 +741,11 @@ Some laptops only support the stop value. If so, keep just the `STOP_CHARGE_THRE
 - `sudo tlp fullcharge` charges to 100% once, for example before travelling. The limit applies again afterwards.
 - `sudo tlp start` re-applies the settings after you change the config.
 
-TLP is installed explicitly, so the cleanup in step 8 won't remove it.
+TLP is installed explicitly, so the cleanup in step 9 won't remove it.
 
 ---
 
-## 8. Cleanup
+## 9. Cleanup
 
 Removes everything not needed. Run each block in order, after everything above is installed.
 
@@ -680,6 +824,10 @@ Official Arch repos (signed by Arch's maintainers):
 - libreoffice-fresh-en-gb
 - hunspell-en_gb
 - ttf-liberation
+- networkmanager
+- proton-vpn-gtk-app
+- gnome-keyring
+- jq
 - tlp
 
 AUR (user-submitted, not vetted by Arch):
