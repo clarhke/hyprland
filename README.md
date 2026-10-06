@@ -617,6 +617,8 @@ EOF
 chmod +x ~/.config/hypr/protonvpn-toggle.sh
 ```
 
+If you're using the `hyprland.lua` from this repo, it already has the key and the autostart line, so skip the next two steps and just run `hyprctl reload`.
+
 Check whether `SUPER + P` is already used (the default config binds it to pseudo-tiling):
 
 ```bash
@@ -631,6 +633,8 @@ hyprctl reload
 ```
 
 Press `SUPER + P` to hide the window and `SUPER + P` again to show it. To use a different key, change the `P` in the last command.
+
+Proton VPN also opens on login, through `hl.exec_cmd("protonvpn-app")` in the `hyprland.start` block of `hyprland.lua`. Its window appears on login, so hide it with `SUPER + P`. Autostart only runs on login, so `hyprctl reload` won't start it. Keep the app's own auto-connect setting off, because with it on you can get a "No server available in the current tier" popup at login.
 
 If nothing happens, run the script by hand to see its error:
 
