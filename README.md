@@ -455,7 +455,7 @@ nano ~/.config/hypr/hyprland.lua
 Things to make sure are set in it:
 - **Programs:** `terminal = "kitty"`, `fileManager = "dolphin"`, `menu = "hyprlauncher"`.
 - **Browser:** `local browser = "brave"`. Use straight quotes, because Lua rejects curly ones. `brave-bin` is the package name, `brave` is the command.
-- **Autostart:** launch `waybar` and `hyprpaper` on `hyprland.start`.
+- **Autostart:** launch `waybar`, `hyprpaper` and `protonvpn-app` on `hyprland.start`.
 - **Keybinds used with this setup:**
 
 ```lua
@@ -474,7 +474,7 @@ Reload keybind changes without logging out:
 hyprctl reload
 ```
 
-To test autostart, log out and back in (or reboot). `hyprctl reload` does not re-run `hyprland.start`, so waybar and hyprpaper won't relaunch from it.
+To test autostart, log out and back in (or reboot). `hyprctl reload` does not re-run `hyprland.start`, so waybar, hyprpaper and Proton VPN won't relaunch from it.
 
 ### Backing up your config to GitHub (optional)
 
