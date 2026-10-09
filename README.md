@@ -361,7 +361,7 @@ systemctl --user restart dunst
 
 ## 4. Wallpaper (hyprpaper)
 
-Put your wallpaper at `~/Downloads/wallpaper.png` first.
+Put your wallpaper at `~/misc/wallpaper.png` first.
 
 Check your monitor name (run this inside a Hyprland session). It's usually `eDP-1` on a laptop:
 
@@ -378,7 +378,7 @@ nano ~/.config/hypr/hyprpaper.conf
 ```ini
 wallpaper {
     monitor = eDP-1
-    path = /home/arch/Downloads/wallpaper.png
+    path = /home/arch/misc/wallpaper.png
     fit_mode = cover
 }
 
@@ -388,7 +388,7 @@ splash = false
 Check the wallpaper file exists, then test hyprpaper:
 
 ```bash
-ls ~/Downloads/wallpaper.png
+ls ~/misc/wallpaper.png
 hyprpaper
 ```
 
@@ -404,7 +404,7 @@ SDDM runs as its own user and can't read your home folder, so copy the wallpaper
 
 ```bash
 sudo mkdir -p /usr/share/backgrounds
-sudo cp ~/Downloads/wallpaper.png /usr/share/backgrounds/
+sudo cp ~/misc/wallpaper.png /usr/share/backgrounds/
 ```
 
 Set the `maldives` theme and point it at the wallpaper:
@@ -463,7 +463,7 @@ hl.bind("SHIFT + Shift_R", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(browser))
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
-hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region -o $HOME/Downloads"))
+hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region -o $HOME/misc"))
 ```
 
 `PRINT` copies a selected area to the clipboard. `SUPER + PRINT` saves it to `~/Downloads` as well.
