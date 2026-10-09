@@ -17,6 +17,7 @@ Contents:
 - 8. Laptop battery life (TLP)
 - 9. LazyVim, Neogit, Diffview and GitGraph
 - 10. Cleanup
+- 11. Moving to a new laptop
 
 ---
 
@@ -929,3 +930,79 @@ AUR (user-submitted, not vetted by Arch):
 - yay
 - brave-bin
 - cliamp
+
+---
+
+## 11. Moving to a new laptop
+
+Your Hyprland config and your Neovim config each live in their own GitHub repository, so on a new laptop you clone them instead of rewriting anything. The Hyprland repository also holds this guide as its `README.md`.
+
+- Hyprland config: `https://github.com/clarhke/hyprland`, restored to `~/.config/hypr`
+- Neovim config: `https://github.com/clarhke/nvim`, restored to `~/.config/nvim`
+
+### Before you start
+
+Follow steps 0 to 2 first (update, yay and the packages). Also install the LazyVim dependencies from the LazyVim step:
+
+```bash
+sudo pacman -S --needed neovim ripgrep fd lazygit tree-sitter-cli
+```
+
+Hyprland must already be installed and working.
+
+### Log in to GitHub
+
+Cloning public repositories needs no login, but pushing does. This is the same as "Backing up your config to GitHub" in step 6:
+
+```bash
+gh auth login
+gh auth setup-git
+git config --global user.name "your name"
+git config --global user.email "you@example.com"
+```
+
+### Restore the Hyprland config
+
+A fresh Hyprland install creates its own `~/.config/hypr`, and `git clone` refuses a folder that isn't empty, so move it aside first (a "No such file" error just means there wasn't one):
+
+```bash
+mv ~/.config/hypr ~/.config/hypr.bak
+git clone https://github.com/clarhke/hyprland.git ~/.config/hypr
+```
+
+### Restore the Neovim config
+
+```bash
+mv ~/.config/nvim ~/.config/nvim.bak
+git clone https://github.com/clarhke/nvim.git ~/.config/nvim
+```
+
+Then open Neovim with `nvim`. The first launch installs all the plugins and treesitter parsers, which takes a minute. When the messages stop, quit with `:qa` and reopen once. `lazy-lock.json` is in the repository, so you get the same plugin versions as before.
+
+### Copy what isn't in the repositories
+
+- **Wallpaper:** copy `~/misc/wallpaper.png` over from the old laptop (USB stick or cloud storage) into `~/misc`. Create the folder first with `mkdir -p ~/misc`.
+- **Waybar:** the config and style are in step 3 of this guide, not in the repositories.
+- **Shell aliases:** step 5.
+- **System-level steps:** the SDDM login wallpaper (step 4), the VPN (step 7) and TLP (step 8) change files outside your home folder, so run them again.
+- **Hardware settings:** `hyprland.lua` was written for the old laptop. Check the monitor name (`eDP-1` in the wallpaper line), `kb_layout` and the scale against "Before you start: laptop checklist" at the top of this guide.
+
+Then log out and back in so autostart runs.
+
+### Keep the repositories up to date
+
+Anything you haven't pushed won't be on the new laptop. After changing a config:
+
+```bash
+cd ~/.config/hypr
+git add .
+git commit -m "what you changed"
+git push
+```
+
+```bash
+cd ~/.config/nvim
+git add .
+git commit -m "what you changed"
+git push
+```
