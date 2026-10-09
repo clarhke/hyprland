@@ -839,5 +839,3 @@ AUR (user-submitted, not vetted by Arch):
 - yay
 - brave-bin
 - cliamp
-
--- the end!! 
