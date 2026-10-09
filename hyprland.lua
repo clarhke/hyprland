@@ -350,4 +350,20 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("$HOME/.config/hypr/protonvpn-toggle.sh"))
+
+-- hide/show the Proton VPN window
+local vpn_toggle = [==[
+info=$(hyprctl clients -j | jq -r '.[] | select(.title=="Proton VPN") | "\(.address) \(.workspace.name)"' | head -n1)
+if [ -z "$info" ]; then
+  protonvpn-app &
+  exit
+fi
+addr=${info% *}
+ws=${info#* }
+if [ "$ws" != "special:vpn" ]; then
+  hyprctl dispatch "hl.dsp.window.move({ workspace = \"special:vpn\", follow = false, window = \"address:$addr\" })"
+else
+  hyprctl dispatch 'hl.dsp.workspace.toggle_special("vpn")'
+fi
+]==]
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("bash -c '" .. (vpn_toggle:gsub("'", "'\\''")) .. "'"))
