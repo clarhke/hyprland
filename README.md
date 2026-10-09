@@ -2,7 +2,7 @@
 
 Run everything as your normal user, not root. Copy commands exactly, because spaces and quotes matter.
 
-Safety: pacman packages come from Arch's official repos and are signed by Arch's maintainers. Only four packages in this guide come from the AUR (`yay`, `cliamp`, `brave-bin`, `visual-studio-code-bin`). AUR packages are user-submitted and not vetted by Arch, so this guide shows you how to read their build scripts before installing.
+Safety: pacman packages come from Arch's official repos and are signed by Arch's maintainers. Only three packages in this guide come from the AUR (`yay`, `cliamp`, `brave-bin`). AUR packages are user-submitted and not vetted by Arch, so this guide shows you how to read their build scripts before installing.
 
 Contents:
 - Before you start: laptop checklist
@@ -102,6 +102,12 @@ Media keys:
 sudo pacman -S --needed playerctl
 ```
 
+Editor (Neovim):
+
+```bash
+sudo pacman -S --needed neovim
+```
+
 Media player (VLC). `vlc-plugins-all` adds the codec and format plugins, which are split out of the main `vlc` package on Arch:
 
 ```bash
@@ -170,13 +176,6 @@ yay -S cliamp
 ```bash
 yay -Gp brave-bin
 yay -S brave-bin
-```
-
-Code editor (Visual Studio Code, Microsoft's build). Check that the `source=` URL points to a Microsoft domain:
-
-```bash
-yay -Gp visual-studio-code-bin
-yay -S visual-studio-code-bin
 ```
 
 ---
@@ -414,6 +413,7 @@ Add these lines at the bottom:
 
 ```bash
 alias c="cliamp"
+alias n="nvim"
 ```
 
 Apply them to the current terminal (new terminals pick them up automatically):
@@ -422,7 +422,7 @@ Apply them to the current terminal (new terminals pick them up automatically):
 source ~/.bashrc
 ```
 
-Now `c` launches cliamp.
+Now `c` launches cliamp and `n` launches Neovim.
 
 ---
 
@@ -435,7 +435,6 @@ nano ~/.config/hypr/hyprland.lua
 Things to make sure are set in it:
 - **Programs:** `terminal = "kitty"`, `fileManager = "dolphin"`, `menu = "hyprlauncher"`.
 - **Browser:** `local browser = "brave"`. Use straight quotes, because Lua rejects curly ones. `brave-bin` is the package name, `brave` is the command.
-- **Editor:** `local editor = "code"`. `visual-studio-code-bin` is the package name, `code` is the command.
 - **Autostart:** launch `waybar`, `hyprpaper` and `protonvpn-app` on `hyprland.start`.
 - **Keybinds used with this setup:**
 
@@ -443,12 +442,11 @@ Things to make sure are set in it:
 hl.bind("SHIFT + Shift_R", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(browser))
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(editor))
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region -o $HOME/misc"))
 ```
 
-`PRINT` copies a selected area to the clipboard. `SUPER + PRINT` saves it to `~/misc` as well. `SUPER + C` opens VS Code.
+`PRINT` copies a selected area to the clipboard. `SUPER + PRINT` saves it to `~/misc` as well.
 
 Reload keybind changes without logging out:
 
@@ -560,7 +558,7 @@ Proton's app needs a keyring to store your login:
 sudo pacman -S --needed proton-vpn-gtk-app gnome-keyring
 ```
 
-(If pacman can't find `proton-vpn-gtk-app`, it's available from the AUR instead. That would be a fifth AUR package, so read its build script first, the same way as in step 2: `yay -Gp proton-vpn-gtk-app`, then `yay -S proton-vpn-gtk-app`.)
+(If pacman can't find `proton-vpn-gtk-app`, it's available from the AUR instead. That would be a fourth AUR package, so read its build script first, the same way as in step 2: `yay -Gp proton-vpn-gtk-app`, then `yay -S proton-vpn-gtk-app`.)
 
 Open Proton VPN from the launcher, log in, and connect. The free plan works. To check the tunnel is up, this should print an IP that isn't your own:
 
@@ -760,7 +758,7 @@ Remove Go's leftover folders (the `chmod` is needed because Go makes them read-o
 chmod -R u+w ~/Downloads/go ~/go 2>/dev/null; rm -rf ~/Downloads/go ~/go
 ```
 
-Check the result. The first command should list only `brave-bin`, `cliamp`, `visual-studio-code-bin` and `yay`, and the second should print nothing:
+Check the result. The first command should list only `brave-bin`, `cliamp` and `yay`, and the second should print nothing:
 
 ```bash
 pacman -Qm
@@ -787,6 +785,7 @@ Official Arch repos (signed by Arch's maintainers):
 - slurp
 - wl-clipboard
 - playerctl
+- neovim
 - vlc
 - vlc-plugins-all
 - pipewire
@@ -820,4 +819,3 @@ AUR (user-submitted, not vetted by Arch):
 - yay
 - brave-bin
 - cliamp
-- visual-studio-code-bin

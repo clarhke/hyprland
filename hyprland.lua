@@ -34,7 +34,6 @@ local terminal    = "kitty"
 local fileManager = "dolphin"
 local menu = "hyprlauncher"
 local browser = "brave"
-local editor = "code"
 
 -------------------
 ---- AUTOSTART ----
@@ -258,7 +257,6 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + X", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(browser))
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(editor))
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region -o $HOME/misc"))
 hl.bind(mainMod .. " + D",         hl.dsp.workspace.toggle_special("magic"))
