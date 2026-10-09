@@ -32,12 +32,6 @@ sudo pacman -S --needed linux-firmware
 ```
 
 - **Network manager:** the VPN in step 7 needs NetworkManager to run your Wi-Fi. If your Wi-Fi is handled by plain `iwd` or `systemd-networkd` instead, step 7 shows the switch. Have your Wi-Fi password ready for it.
-- **Username:** check it with the command below. If it isn't `arch`, change `/home/arch` in the wallpaper path (step 4).
-
-```bash
-whoami
-```
-
 - **Monitor name:** a laptop's built-in screen is almost always `eDP-1`, but confirm with `hyprctl monitors` (step 4).
 - **Screen scaling:** high-resolution screens (the Surface Pro and some Framework models) can make text look tiny. `scale = "auto"` in `hyprland.lua` usually handles it. If it doesn't, set a fixed value such as `scale = 1.5`.
 - **Keyboard layout:** `hyprland.lua` has `kb_layout = "gb"` (UK). Change it to match the keyboard, for example `"us"`.
@@ -368,34 +362,22 @@ Check your monitor name (run this inside a Hyprland session). It's usually `eDP-
 hyprctl monitors
 ```
 
-Create the config:
+The wallpaper settings live in `hyprland.lua`, which writes a temporary hyprpaper config and starts hyprpaper at login. The autostart block already has it:
 
-```bash
-nano ~/.config/hypr/hyprpaper.conf
+```lua
+hl.exec_cmd([[bash -c 'printf "wallpaper {\n    monitor = eDP-1\n    path = %s/misc/wallpaper.png\n    fit_mode = cover\n}\n\nsplash = false\n" "$HOME" > /tmp/hyprpaper.conf && hyprpaper -c /tmp/hyprpaper.conf']])
 ```
 
-```ini
-wallpaper {
-    monitor = eDP-1
-    path = /home/arch/misc/wallpaper.png
-    fit_mode = cover
-}
-
-splash = false
-```
-
-Check the wallpaper file exists, then test hyprpaper:
+Check the wallpaper file exists, then log out and back in to see it (`hyprctl reload` doesn't re-run autostart):
 
 ```bash
 ls ~/misc/wallpaper.png
-hyprpaper
 ```
 
 Notes:
-- Change `eDP-1` if `hyprctl monitors` shows a different name.
-- `/home/arch` assumes your username is `arch`. Change it if not.
-- Running `hyprpaper` by hand keeps that terminal busy. Press `Ctrl+C` once the wallpaper appears, or you'll end up with two copies when Hyprland autostarts it.
-- `splash = false` hides the small random text ("better call vaxry") at the bottom of the screen. It goes in `hyprpaper.conf` because hyprpaper draws over Hyprland's own splash.
+- Change `eDP-1` in that line if `hyprctl monitors` shows a different name.
+- The path uses `$HOME`, so it works for any username.
+- `splash = false` hides the small random text ("better call vaxry") at the bottom of the screen. It's set here because hyprpaper draws over Hyprland's own splash.
 
 ### Login screen wallpaper (SDDM)
 
