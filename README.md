@@ -466,7 +466,7 @@ hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region -o $HOME/misc"))
 ```
 
-`PRINT` copies a selected area to the clipboard. `SUPER + PRINT` saves it to `~/Downloads` as well.
+`PRINT` copies a selected area to the clipboard. `SUPER + PRINT` saves it to `~/misc` as well.
 
 Reload keybind changes without logging out:
 
