@@ -16,6 +16,7 @@ Contents:
 - 7. VPN (Proton VPN)
 - 8. Laptop battery life (TLP)
 - 9. Cleanup
+- 10. LazyVim, Neogit, Diffview and GitGraph
 
 ---
 
@@ -813,9 +814,118 @@ Official Arch repos (signed by Arch's maintainers):
 - gnome-keyring
 - jq
 - tlp
+- ripgrep
+- fd
+- lazygit
+- tree-sitter-cli
 
 AUR (user-submitted, not vetted by Arch):
 
 - yay
 - brave-bin
 - cliamp
+
+---
+
+## 10. LazyVim, Neogit, Diffview and GitGraph
+
+Run this after everything above. LazyVim needs Neovim 0.11 or newer, which Arch's `neovim` package already is (installed in step 2). These packages are installed explicitly, so the cleanup in step 9 won't remove them.
+
+### Dependencies
+
+`git` and `base-devel` are already installed from step 1:
+
+```bash
+sudo pacman -S --needed neovim ripgrep fd lazygit tree-sitter-cli
+```
+
+kitty bundles its own Nerd Font symbols, so you don't need a separate font for the icons.
+
+### Install LazyVim
+
+This backs up any existing Neovim config first (a "No such file" error just means there wasn't one):
+
+```bash
+mv ~/.config/nvim ~/.config/nvim.bak
+mv ~/.local/share/nvim ~/.local/share/nvim.bak
+mv ~/.local/state/nvim ~/.local/state/nvim.bak
+mv ~/.cache/nvim ~/.cache/nvim.bak
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+rm -rf ~/.config/nvim/.git
+```
+
+### Add neogit, diffview and gitgraph
+
+LazyVim loads every file in `lua/plugins/` automatically:
+
+```bash
+cat > ~/.config/nvim/lua/plugins/git-extras.lua <<'EOF'
+return {
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
+    keys = {
+      { "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diffview" },
+      { "<leader>gV", "<cmd>DiffviewClose<cr>", desc = "Diffview close" },
+    },
+  },
+  {
+    "NeogitOrg/neogit",
+    dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
+    cmd = "Neogit",
+    keys = {
+      { "<leader>gn", "<cmd>Neogit<cr>", desc = "Neogit" },
+    },
+    opts = {
+      integrations = { diffview = true },
+    },
+  },
+  {
+    "isakbm/gitgraph.nvim",
+    dependencies = { "sindrets/diffview.nvim" },
+    keys = {
+      {
+        "<leader>gm",
+        function()
+          require("gitgraph").draw({}, { all = true, max_count = 5000 })
+        end,
+        desc = "Git graph",
+      },
+    },
+    opts = {
+      hooks = {
+        on_select_commit = function(commit)
+          vim.cmd("DiffviewOpen " .. commit.hash .. "^!")
+        end,
+        on_select_range_commit = function(from, to)
+          vim.cmd("DiffviewOpen " .. from.hash .. "~1.." .. to.hash)
+        end,
+      },
+    },
+  },
+}
+EOF
+```
+
+### First launch
+
+The `n` alias from step 5 runs `nvim`. Open it inside a git repo and let the plugins install. Treesitter also downloads its language parsers in the background, which takes a minute. When the messages stop, quit with `:qa` and reopen once:
+
+```bash
+cd ~/.config/hypr
+n
+```
+
+Inside Neovim, check everything is healthy with `:checkhealth lazyvim`. The dashboard may show something like `4/35 plugins`. That is normal, because most plugins load only when used.
+
+If `nvim` reports a missing `tree-sitter` or compiler error, make sure both `tree-sitter-cli` and `base-devel` are installed, then run `:TSUpdate`. To check the parsers installed, run `ls ~/.local/share/nvim/site/parser/`.
+
+### Keys
+
+`<leader>` is Space:
+
+- `Space g n` opens Neogit.
+- `Space g v` opens Diffview, and `Space g V` closes it.
+- `Space g m` opens the git graph. Press Enter on a commit to open its diff in Diffview.
+
+These keys don't clash with LazyVim's own git keys.
