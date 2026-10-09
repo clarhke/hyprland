@@ -15,8 +15,8 @@ Contents:
 - 6. Hyprland config
 - 7. VPN (Proton VPN)
 - 8. Laptop battery life (TLP)
-- 9. Cleanup
-- 10. LazyVim, Neogit, Diffview and GitGraph
+- 9. LazyVim, Neogit, Diffview and GitGraph
+- 10. Cleanup
 
 ---
 
@@ -330,7 +330,7 @@ Note: this warning is visual only. A pop-up notification would need a notificati
 
 ### Notifications (dunst, optional)
 
-Pop-up notifications (for example from Brave) need a notification daemon. This guide doesn't install one, but `archinstall`'s Hyprland profile includes `dunst`. If you set up Hyprland by hand and want notifications, install it. It's explicitly installed, so the cleanup in step 9 won't remove it:
+Pop-up notifications (for example from Brave) need a notification daemon. This guide doesn't install one, but `archinstall`'s Hyprland profile includes `dunst`. If you set up Hyprland by hand and want notifications, install it. It's explicitly installed, so the cleanup in step 10 won't remove it:
 
 ```bash
 sudo pacman -S --needed dunst
@@ -726,110 +726,13 @@ Some laptops only support the stop value. If so, keep just the `STOP_CHARGE_THRE
 - `sudo tlp fullcharge` charges to 100% once, for example before travelling. The limit applies again afterwards.
 - `sudo tlp start` re-applies the settings after you change the config.
 
-TLP is installed explicitly, so the cleanup in step 9 won't remove it.
+TLP is installed explicitly, so the cleanup in step 10 won't remove it.
 
 ---
 
-## 9. Cleanup
+## 9. LazyVim, Neogit, Diffview and GitGraph
 
-Removes everything not needed. Run each block in order, after everything above is installed.
-
-Remove known build leftovers (only the ones that are installed; a "no targets specified" error just means none were left):
-
-```bash
-sudo pacman -Rns --noconfirm $(pacman -Qq cliamp-debug yay-debug sdl2_sound-debug quickshell-git cmake ninja go 2>/dev/null)
-```
-
-Remove all orphaned dependencies, repeating until none are left (prints nothing if there are none):
-
-```bash
-while orphans=$(pacman -Qdtq); [ -n "$orphans" ]; do echo "Removing: $orphans"; sudo pacman -Rns --noconfirm $orphans || break; done
-```
-
-Clear the package caches (the first line removes half-finished download folders that make the cache clean error out; check there is no space before the `*`):
-
-```bash
-sudo rm -rf /var/cache/pacman/pkg/download-*
-yay -Sc --noconfirm
-```
-
-Remove Go's leftover folders (the `chmod` is needed because Go makes them read-only):
-
-```bash
-chmod -R u+w ~/Downloads/go ~/go 2>/dev/null; rm -rf ~/Downloads/go ~/go
-```
-
-Check the result. The first command should list only `brave-bin`, `cliamp` and `yay`, and the second should print nothing:
-
-```bash
-pacman -Qm
-pacman -Qdtq
-```
-
-Notes:
-- This only removes packages that were installed as dependencies and that nothing needs. If it removes something you wanted, reinstall it with `sudo pacman -S <name>`.
-- To protect a package from future cleanups, run `sudo pacman -D --asexplicit <name>`.
-- Updating `cliamp` later rebuilds it, and `yay` will reinstall `go` temporarily. Run this step again afterwards.
-
-### Packages that should remain (plus Hyprland and the base system)
-
-Official Arch repos (signed by Arch's maintainers):
-
-- base-devel
-- git
-- github-cli
-- waybar
-- hyprpaper
-- brightnessctl
-- hyprshot
-- grim
-- slurp
-- wl-clipboard
-- playerctl
-- neovim
-- vlc
-- vlc-plugins-all
-- pipewire
-- pipewire-pulse
-- wireplumber
-- kitty
-- dolphin
-- hyprlauncher
-- konsole
-- ark
-- unzip
-- p7zip
-- unrar
-- ttf-dejavu
-- noto-fonts
-- noto-fonts-emoji
-- noto-fonts-cjk
-- noto-fonts-extra
-- libreoffice-fresh
-- libreoffice-fresh-en-gb
-- hunspell-en_gb
-- ttf-liberation
-- networkmanager
-- proton-vpn-gtk-app
-- gnome-keyring
-- jq
-- tlp
-- ripgrep
-- fd
-- lazygit
-- tree-sitter-cli
-
-AUR (user-submitted, not vetted by Arch):
-
-- yay
-- brave-bin
-- cliamp
-
----
-
-## 10. LazyVim, Neogit, Diffview and GitGraph
-
-Run this after everything above. LazyVim needs Neovim 0.11 or newer, which Arch's `neovim` package already is (installed in step 2). These packages are installed explicitly, so the cleanup in step 9 won't remove them.
+Run this after everything above. LazyVim needs Neovim 0.11 or newer, which Arch's `neovim` package already is (installed in step 2). These packages are installed explicitly, so the cleanup in step 10 won't remove them.
 
 ### Dependencies
 
@@ -929,3 +832,100 @@ If `nvim` reports a missing `tree-sitter` or compiler error, make sure both `tre
 - `Space g m` opens the git graph. Press Enter on a commit to open its diff in Diffview.
 
 These keys don't clash with LazyVim's own git keys.
+
+---
+
+## 10. Cleanup
+
+Removes everything not needed. Run each block in order, after everything above is installed.
+
+Remove known build leftovers (only the ones that are installed; a "no targets specified" error just means none were left):
+
+```bash
+sudo pacman -Rns --noconfirm $(pacman -Qq cliamp-debug yay-debug sdl2_sound-debug quickshell-git cmake ninja go 2>/dev/null)
+```
+
+Remove all orphaned dependencies, repeating until none are left (prints nothing if there are none):
+
+```bash
+while orphans=$(pacman -Qdtq); [ -n "$orphans" ]; do echo "Removing: $orphans"; sudo pacman -Rns --noconfirm $orphans || break; done
+```
+
+Clear the package caches (the first line removes half-finished download folders that make the cache clean error out; check there is no space before the `*`):
+
+```bash
+sudo rm -rf /var/cache/pacman/pkg/download-*
+yay -Sc --noconfirm
+```
+
+Remove Go's leftover folders (the `chmod` is needed because Go makes them read-only):
+
+```bash
+chmod -R u+w ~/Downloads/go ~/go 2>/dev/null; rm -rf ~/Downloads/go ~/go
+```
+
+Check the result. The first command should list only `brave-bin`, `cliamp` and `yay`, and the second should print nothing:
+
+```bash
+pacman -Qm
+pacman -Qdtq
+```
+
+Notes:
+- This only removes packages that were installed as dependencies and that nothing needs. If it removes something you wanted, reinstall it with `sudo pacman -S <name>`.
+- To protect a package from future cleanups, run `sudo pacman -D --asexplicit <name>`.
+- Updating `cliamp` later rebuilds it, and `yay` will reinstall `go` temporarily. Run this step again afterwards.
+
+### Packages that should remain (plus Hyprland and the base system)
+
+Official Arch repos (signed by Arch's maintainers):
+
+- base-devel
+- git
+- github-cli
+- waybar
+- hyprpaper
+- brightnessctl
+- hyprshot
+- grim
+- slurp
+- wl-clipboard
+- playerctl
+- neovim
+- vlc
+- vlc-plugins-all
+- pipewire
+- pipewire-pulse
+- wireplumber
+- kitty
+- dolphin
+- hyprlauncher
+- konsole
+- ark
+- unzip
+- p7zip
+- unrar
+- ttf-dejavu
+- noto-fonts
+- noto-fonts-emoji
+- noto-fonts-cjk
+- noto-fonts-extra
+- libreoffice-fresh
+- libreoffice-fresh-en-gb
+- hunspell-en_gb
+- ttf-liberation
+- networkmanager
+- proton-vpn-gtk-app
+- gnome-keyring
+- jq
+- tlp
+- ripgrep
+- fd
+- lazygit
+- tree-sitter-cli
+
+AUR (user-submitted, not vetted by Arch):
+
+- yay
+- brave-bin
+- cliamp
