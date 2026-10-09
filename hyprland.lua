@@ -349,3 +349,4 @@ hl.window_rule({
     float = true,
 })
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("$HOME/.config/hypr/protonvpn-toggle.sh"))
+hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("code"))
