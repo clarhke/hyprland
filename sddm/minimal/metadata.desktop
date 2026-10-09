@@ -1,0 +1,6 @@
+[SddmGreeterTheme]
+Name=minimal
+MainScript=Main.qml
+Theme-Id=minimal
+Theme-API=2.0
+QtVersion=6
