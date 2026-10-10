@@ -26,15 +26,18 @@ local bar = {
 
     -- Which modules sit where on the bar
     ["modules-left"]   = { "hyprland/workspaces" },
-    ["modules-center"] = { "clock" },
+    ["modules-center"] = { "custom/clock" },
     ["modules-right"]  = { "cpu", "memory", "network", "pulseaudio", "backlight", "battery" },
 
     -- How each module reads
     ["hyprland/workspaces"] = { format = "{name}", ["on-click"] = "activate" },
 
-    clock = {
-        format = "{:%a %d %b   %H:%M}",              -- e.g. Sun 04 Oct   14:30
-        ["tooltip-format"] = "{:%A, %d %B %Y}",      -- shown when you hover
+    -- Clock: a custom module, because Waybar's own clock can't lowercase text.
+    -- It runs `date` and lowercases the result, e.g. sat 10 oct   17:21
+    ["custom/clock"] = {
+        exec = [[printf '{"text":"%s","tooltip":"%s"}\n' "$(date '+%a %d %b   %H:%M' | tr '[:upper:]' '[:lower:]')" "$(date '+%A, %d %B %Y' | tr '[:upper:]' '[:lower:]')"]],
+        ["return-type"] = "json",
+        interval = 5,                                -- refresh every 5 seconds
     },
 
     cpu    = { format = "cpu {usage}%" },
@@ -87,7 +90,7 @@ window#waybar {
     background: #{{highlight}};
 }
 
-#clock,
+#custom-clock,
 #cpu,
 #memory,
 #network,
