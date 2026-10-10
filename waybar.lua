@@ -37,25 +37,25 @@ local bar = {
         ["tooltip-format"] = "{:%A, %d %B %Y}",      -- shown when you hover
     },
 
-    cpu    = { format = "CPU {usage}%" },
-    memory = { format = "RAM {percentage}%" },
+    cpu    = { format = "cpu {usage}%" },
+    memory = { format = "ram {percentage}%" },
 
     network = {
-        ["format-wifi"]         = "WiFi {signalStrength}%",
-        ["format-ethernet"]     = "Ethernet",
-        ["format-disconnected"] = "Offline",
+        ["format-wifi"]         = "wifi {signalStrength}%",
+        ["format-ethernet"]     = "ethernet",
+        ["format-disconnected"] = "offline",
     },
 
-    pulseaudio = { format = "VOL {volume}%", ["format-muted"] = "MUTED" },
+    pulseaudio = { format = "vol {volume}%", ["format-muted"] = "muted" },
 
     backlight = { format = "☀ {percent}%" },
 
     battery = {
         states              = { critical = 10 },     -- "critical" kicks in at 10%
-        format              = "BAT {capacity}%",
-        ["format-charging"] = "BAT {capacity}% ⚡",
-        ["format-full"]     = "BAT {capacity}%",
-        ["format-critical"] = "LOW BAT {capacity}%",
+        format              = "bat {capacity}%",
+        ["format-charging"] = "bat {capacity}% ⚡",
+        ["format-full"]     = "bat {capacity}%",
+        ["format-critical"] = "low bat {capacity}%",
     },
 }
 
