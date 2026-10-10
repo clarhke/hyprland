@@ -22,9 +22,9 @@ local palette = {
     bg        = "111318",   -- bar background
     fg        = "ffffff",   -- bar text
     highlight = "333842",   -- active workspace button
-    accent1   = "33ccff",   -- active window border, gradient start
-    accent2   = "00ff99",   -- active window border, gradient end
-    inactive  = "595959",   -- inactive window border
+    accent1   = "bbbbbb",   -- active window border, gradient start
+    accent2   = "bbbbbb",   -- active window border, gradient end
+    inactive  = "222222",   -- inactive window border
     critical  = "ff5555",   -- low battery warning
     shadow    = "1a1a1a",   -- window shadow
 }
