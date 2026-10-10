@@ -46,16 +46,24 @@ local bar = {
         ["format-disconnected"] = "Offline",
     },
 
-    pulseaudio = { format = "VOL {volume}%", ["format-muted"] = "MUTED" },
+    -- Volume: icon only (hover for the percentage). Add " {volume}%" after {icon} to show it.
+    pulseaudio = {
+        format           = "{icon}",
+        ["format-muted"] = "🔇",
+        ["format-icons"] = { default = { "🔈", "🔉", "🔊" } },
+        ["tooltip-format"] = "{volume}%",
+    },
 
     backlight = { format = "☀ {percent}%" },
 
     battery = {
         states              = { critical = 10 },     -- "critical" kicks in at 10%
-        format              = "BAT {capacity}%",
-        ["format-charging"] = "BAT {capacity}% ⚡",
-        ["format-full"]     = "BAT {capacity}%",
-        ["format-critical"] = "LOW BAT {capacity}%",
+        -- The bar icon shrinks as the battery drains: ▁ (empty) up to █ (full)
+        ["format-icons"]    = { "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" },
+        format              = "{icon} {capacity}%",
+        ["format-charging"] = "{icon} {capacity}% ⚡",
+        ["format-full"]     = "{icon} {capacity}%",
+        ["format-critical"] = "{icon} {capacity}% LOW",
     },
 }
 
