@@ -48,8 +48,8 @@ hl.monitor({
 -- 3. ENVIRONMENT VARIABLES
 -- https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 -- ============================================================================
-hl.env("XCURSOR_SIZE", "12")
-hl.env("HYPRCURSOR_SIZE", "12")
+hl.env("XCURSOR_SIZE", "14")
+hl.env("HYPRCURSOR_SIZE", "14")
 -- hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")   -- example: cursor theme
 
 
