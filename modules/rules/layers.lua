@@ -1,0 +1,4 @@
+-- LAYER RULES: for bars, launchers, notifications (things that aren't normal windows).
+-- Example: blur behind waybar (check the namespace with: hyprctl layers)
+-- hl.layer_rule({ name = "blur-waybar", match = { namespace = "^waybar$" }, blur = true })
+-- hl.layer_rule({ name = "no-anim-overlay", match = { namespace = "^my-overlay$" }, no_anim = true })
